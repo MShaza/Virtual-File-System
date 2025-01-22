@@ -37,12 +37,14 @@ void createDirectory(string fileName, bool isFile);
  * @parameters : Current Direcorty
 */
 void::VFS::createDirectory(string fileName, bool isFile){
-    /*check if file already exist
-    if yes return file or direcotry exist
-    if no create a file or direcotry*/
-    
-
-}
+    //check if file already exist
+      if(checkIfExist(currentDirectory, fileName)){
+        cout<<"File already exist"<<endl;
+    }
+    Node* newNode = new Node(fileName, isFile);
+        currentDirectory->directoryChildrens.push_back(newNode);
+        std::cout << (isFile ? "File" : "Directory") << " created: " << fileName << "\n";
+    }
 int main(){
 
 }
