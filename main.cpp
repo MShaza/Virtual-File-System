@@ -36,10 +36,13 @@ void listDirectory();
 void changeDirectory(string directoryName);
 void commandsHelp();
 void getCommands();
+void removeDirectory(string directoryName);
 };
 /**
  * @func : Create Directory
- * @parameters : Current Direcorty
+ * @parameters : Current Direcorty, file/directory
+ * @returnparameters : None
+ * @definition : Create a file and directory
 */
 void::VirtualFileSystem::createDirectory(string fileName, bool isFile){
     //check if file already exist
@@ -47,11 +50,18 @@ void::VirtualFileSystem::createDirectory(string fileName, bool isFile){
         cout<<"File already exist"<<endl;
         return;
     }
+    // Create New Node
     Node* newNode = new Node(fileName, isFile);
         currentDirectory->directoryChildrens.push_back(newNode);
         std::cout << (isFile ? "File" : "Directory") << " created: " << fileName << "\n";
         return;
     }
+ /**
+ * @func : listDirectory
+ * @parameters : None
+ * @Return : None
+ * * @definition : List all the files in the current directory
+*/
 void::VirtualFileSystem::listDirectory(){
     if(currentDirectory->directoryChildrens.empty()){
         cout<<"There are no files in the driectory "<<currentDirectory->fileName<<endl;
@@ -62,6 +72,12 @@ void::VirtualFileSystem::listDirectory(){
     }
     return;
 }
+ /**
+ * @func : changeDirectory
+ * @parameters : Change Directory
+ * @Return : None
+ * * @definition : change directory from current working space to another
+*/
 void::VirtualFileSystem::changeDirectory(string changeDirectory){
     if(changeDirectory == ".."){
         currentDirectory = rootNode;
@@ -77,6 +93,40 @@ void::VirtualFileSystem::changeDirectory(string changeDirectory){
         }
     }
 }
+ /**
+ * @func : RemoveDirecotry
+ * @parameters : filename
+ * @Return : None
+ * @definition : remove the direcotry or file
+*/
+void::VirtualFileSystem::removeDirectory(string fileName){
+    if(fileName == "/"){
+        cout<<"Root defualt direcotry cannot be deleted"<<endl;
+    }
+    Node* toBeDeleted = checkIfExist(currentDirectory, fileName);
+   if (toBeDeleted != nullptr) {
+        // Find the iterator pointing to the node in the vector
+        auto it = std::find(currentDirectory->directoryChildrens.begin(), currentDirectory->directoryChildrens.end(), toBeDeleted);
+
+        if (it != currentDirectory->directoryChildrens.end()) {
+            // Free the memory if the node was dynamically allocated
+            delete *it;
+
+            // Remove the node from the vector
+            currentDirectory->directoryChildrens.erase(it);
+
+            cout << "Directory or file '" << fileName << "' deleted successfully" << endl;
+        }
+    } else {
+        cout << "Directory or file '" << fileName << "' not found" << endl;
+    }
+}
+ /**
+ * @func : commandsHelp
+ * @parameters : None
+ * @Return : None
+ * @definition : Information on all he commands we have
+ * */
 void::VirtualFileSystem::commandsHelp(){
     cout<<"cd <name>        :                  Change Directory"<<endl;
     cout<<"mkdir <name>     :                  Create Diretory"<<endl;
@@ -84,6 +134,12 @@ void::VirtualFileSystem::commandsHelp(){
     cout<<"ls               :                  List all the files in a direcroty"<<endl;
     cout<<"rm <name>        :                  Remove directory/file"<<endl;
 }
+ /**
+ * @func : getCommands
+ * @parameters : None
+ * @Return : None
+ * @definition : get the command breaks down the command
+*/
 void::VirtualFileSystem::getCommands(){
     string getCommand;
     string fileName;
@@ -111,6 +167,13 @@ void::VirtualFileSystem::getCommands(){
         }
         else if(getCommand == "help"){
             commandsHelp();
+        }
+         else if(getCommand.substr(0,2) == "rm"){
+            fileName = getCommand.substr(3,getCommand.length());
+            removeDirectory(fileName);
+        }
+        else{
+            cout<<"Invalid Command! Type help"<<endl;
         }
          cout<<currentDirectory->fileName<<": ";
      }
